@@ -24,6 +24,8 @@ command -v docker >/dev/null 2>&1 || curl --silent http://get.docker.io | sh -
 # setup shipyard
 DEPLOY_CNT=$(docker run -i -t -d -v /var/run/docker.sock:/docker.sock shipyard/deploy setup)
 docker wait $DEPLOY_CNT
+# wait for shipyard to start
+sleep 5
 
 # setup agent
 curl --silent https://github.com/shipyard/shipyard-agent/releases/download/$AGENT_VERSION/shipyard-agent -L -o /usr/local/bin/shipyard-agent
@@ -48,3 +50,4 @@ command=/usr/local/bin/shipyard-agent
 EOF
 
 supervisorctl update
+supervisorctl restart shpyard-agent
