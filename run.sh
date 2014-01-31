@@ -41,7 +41,7 @@ if [ "$ACTION" = "setup" ] ; then
     echo "
 Using $TAG tag for Shipyard
 This may take a moment while the Shipyard images are pulled..."
-    redis=$(docker -H unix://docker.sock run -i -t -d -p 6379 -name shipyard_redis shipyard/redis)
+    redis=$(docker -H unix://docker.sock run -i -t -d -p 6379:6379 -name shipyard_redis shipyard/redis)
     router=$(docker -H unix://docker.sock run -i -t -d -p 80 -link shipyard_redis:redis -name shipyard_router shipyard/router)
     lb=$(docker -H unix://docker.sock run -i -t -d -p 80:80 -link shipyard_redis:redis -link shipyard_router:app_router -name shipyard_lb shipyard/lb)
     db=$(docker -H unix://docker.sock run -i -t -d -p 5432 -e DB_PASS=$DB_PASS -name shipyard_db shipyard/db)
