@@ -1,0 +1,52 @@
+#!/bin/bash
+AGENT_VERSION=${AGENT_VERSION:-v0.0.9}
+IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
+SHIPYARD_URL="http://$IP:8000"
+
+command_exists() {
+        command -v "$@" > /dev/null 2>&1
+}
+
+if [ "$(whoami 2>/dev/null || true)" != 'root' ] ; then
+        echo "You must be root to run setup"
+        exit 1
+fi
+
+case "$(uname -m)" in
+	*64)
+		;;
+	*)
+		echo >&2 'Error: you are not using a 64bit platform.'
+		echo >&2 'Docker currently only supports 64bit platforms.'
+		exit 1
+		;;
+esac
+
+command -v docker >/dev/null 2>&1 || curl --silent http://get.docker.io | sh -
+
+# setup shipyard
+docker run -i -t -v /var/run/docker.sock:/docker.sock shipyard/deploy setup
+
+# setup agent
+curl --silent https://github.com/shipyard/shipyard-agent/releases/download/$AGENT_VERSION/shipyard-agent -L -o /usr/local/bin/shipyard-agent
+chmod +x /usr/local/bin/shipyard-agent
+
+KEY=$(/usr/local/bin/shipyard-agent -url $SHIPYARD_URL -register 2>&1 | tail -1 | sed 's/.*Key: //g' | tr -d ' ')
+
+echo "Using key $KEY from Shipyard..."
+
+# setup supervisor
+apt-get install -y supervisor
+
+cat << EOF > /etc/supervisor/conf.d/shipyard.conf
+[program:shipyard-agent]
+directory=/tmp
+user=root
+command=/usr/local/bin/shipyard-agent
+    -url $SHIPYARD_URL
+    -key $KEY
+    autostart=true
+    autorestart=true
+EOF
+
+supervisorctl update
