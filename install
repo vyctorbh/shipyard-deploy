@@ -3,10 +3,6 @@ AGENT_VERSION=${AGENT_VERSION:-v0.0.9}
 IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
 SHIPYARD_URL="http://$IP:8000"
 
-command_exists() {
-        command -v "$@" > /dev/null 2>&1
-}
-
 if [ "$(whoami 2>/dev/null || true)" != 'root' ] ; then
         echo "You must be root to run setup"
         exit 1
@@ -22,10 +18,12 @@ case "$(uname -m)" in
 		;;
 esac
 
+command -v curl >/dev/null 2>&1 || apt-get install -y curl
 command -v docker >/dev/null 2>&1 || curl --silent http://get.docker.io | sh -
 
 # setup shipyard
-docker run -i -t -v /var/run/docker.sock:/docker.sock shipyard/deploy setup
+DEPLOY_CNT=$(docker run -i -t -d -v /var/run/docker.sock:/docker.sock shipyard/deploy setup)
+docker wait $DEPLOY_CNT
 
 # setup agent
 curl --silent https://github.com/shipyard/shipyard-agent/releases/download/$AGENT_VERSION/shipyard-agent -L -o /usr/local/bin/shipyard-agent
