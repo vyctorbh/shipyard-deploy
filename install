@@ -22,7 +22,7 @@ command -v curl >/dev/null 2>&1 || apt-get install -y curl
 command -v docker >/dev/null 2>&1 || curl --silent http://get.docker.io | sh -
 
 if [ -z "$(grep 127.0.0.1:4243 /etc/default/docker)" ] ; then
-    sed -i 's/.*DOCKER_OPTS.*/DOCKER_OPTS="-H tcp:\/\/127.0.0.1:4243 -H unix:\/\/var\/run\/docker.sock"/g' /etc/default/docker
+    sed -i 's/^#DOCKER_OPTS.*/DOCKER_OPTS="-H tcp:\/\/127.0.0.1:4243 -H unix:\/\/var\/run\/docker.sock"/g' /etc/default/docker
     sudo service docker restart
 fi
 
