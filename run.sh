@@ -2,7 +2,7 @@
 DB_PASS=${DB_PASS:-1q2w3e4r5t}
 ADMIN_PASS=${ADMIN_PASS:-shipyard}
 TAG=${TAG:-latest}
-AGENT_VERSION=${AGENT_VERSION:-v0.0.9}
+AGENT_VERSION=${AGENT_VERSION:-v0.1.1}
 ACTION=${1:-}
 if [ ! -e "/docker.sock" ] ; then
     echo "You must map your Docker socket to /docker.sock (i.e. -v /var/run/docker.sock:/docker.sock)"
@@ -46,6 +46,11 @@ This may take a moment while the Shipyard images are pulled..."
     lb=$(docker -H unix://docker.sock run -i -t -d -p 80:80 -link shipyard_redis:redis -link shipyard_router:app_router -name shipyard_lb shipyard/lb)
     db=$(docker -H unix://docker.sock run -i -t -d -p 5432 -e DB_PASS=$DB_PASS -name shipyard_db shipyard/db)
     shipyard=$(docker -H unix://docker.sock run -i -t -d -p 8000:8000 -link shipyard_db:db -link shipyard_redis:redis -name shipyard -e ADMIN_PASS=$ADMIN_PASS shipyard/shipyard:$TAG app master-worker)
+    # wait for shipyard to start before registering
+    echo "Waiting for containers..."
+    until `curl --output /dev/null --silent --head --fail "http://172.17.42.1:8000"`; do
+        sleep 1
+    done
     echo "
 Shipyard Stack Deployed
 
