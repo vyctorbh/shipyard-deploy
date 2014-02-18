@@ -1,5 +1,5 @@
 #!/bin/bash
-AGENT_VERSION=${AGENT_VERSION:-v0.0.9}
+AGENT_VERSION=${AGENT_VERSION:-v0.2.1}
 IP=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
 SHIPYARD_URL="http://$IP:8000"
 
