@@ -13,7 +13,6 @@ There are a few environment variables to allow you to customize the stack:
 * `DB_PASS`: set the Shipyard Database instance user password
 * `ADMIN_PASS`: set the Shipyard admin account password (default: shipyard)
 * `REVISION`: The tag to use for the Shipyard instance (default: latest)
-* `AGENT_VERSION`: The version to use for the Shipyard Agent (default: latest stable)
 
 ## Setup Shipyard Stack
 `docker run -i -t -v /var/run/docker.sock:/docker.sock shipyard/deploy setup`
