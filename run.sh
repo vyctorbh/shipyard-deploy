@@ -59,7 +59,7 @@ This may take a moment while the Shipyard images are pulled..."
     db=$(docker -H unix://docker.sock run -i -t -d -p 5432 -e DB_NAME=shipyard -e DB_USER=shipyard -e DB_PASS=$DB_PASS $EXTRA_DB_ARGS --name shipyard_db shipyard/db)
     sleep 5
     echo "Starting Shipyard"
-    shipyard=$(docker -H unix://docker.sock run -i -t -d -p 8000:8000 --link shipyard_db:db --link shipyard_redis:redis ---name shipyard -e ADMIN_PASS=$ADMIN_PASS -e DEBUG=$DEBUG shipyard/shipyard:$TAG app master-worker)
+    shipyard=$(docker -H unix://docker.sock run -i -t -d -p 8000:8000 --link shipyard_db:db --link shipyard_redis:redis --name shipyard -e ADMIN_PASS=$ADMIN_PASS -e DEBUG=$DEBUG --entrypoint /app/.docker/run.sh shipyard/shipyard:$TAG app master-worker)
     echo "
 Shipyard Stack Deployed
 
