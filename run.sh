@@ -78,9 +78,9 @@ elif [ "$ACTION" = "restart" ] ; then
     docker -H unix://docker.sock start shipyard > /dev/null
 elif [ "$ACTION" = "upgrade" ] ; then
     echo "Pulling latest Shipyard"
-    docker -H unix://docker.sock pull shipyard/shipyard > /dev/null
+    docker -H unix://docker.sock pull shipyard/shipyard
 
-    echo "Killing and removing existing Shipyard container"
+    echo "Stopping and removing existing Shipyard container"
     docker -H unix://docker.sock kill shipyard > /dev/null
     docker -H unix://docker.sock rm shipyard > /dev/null
 
