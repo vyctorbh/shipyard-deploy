@@ -21,3 +21,6 @@ There are a few environment variables to allow you to customize the stack:
 
 ## Remove Shipyard Stack
 `docker run -i -t -v /var/run/docker.sock:/docker.sock shipyard/deploy cleanup`
+
+## Upgrade Shipyard
+`docker run -i -t -v /var/run/docker.sock:/docker.sock shipyard/deploy upgrade`
