@@ -73,7 +73,7 @@ elif [ "$ACTION" = "restart" ] ; then
         echo "Starting $CNT"
         docker -H unix://docker.sock start shipyard_$CNT > /dev/null
     done
-    echo "Starting Shipyard"
+    echo "Starting shipyard"
     docker -H unix://docker.sock stop shipyard > /dev/null
     docker -H unix://docker.sock start shipyard > /dev/null
         
