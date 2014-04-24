@@ -66,6 +66,17 @@ Shipyard Stack Deployed
 You should be able to login with admin:$ADMIN_PASS at http://<docker-host-ip>:8000
 You will also need to setup and register the Shipyard Agent.  See http://github.com/shipyard/shipyard-agent for details.
 "
+elif [ "$ACTION" = "restart" ] ; then
+    echo "Restarting Shipyard Stack"
+    for CNT in redis router lb db
+    do
+        echo "Starting $CNT"
+        docker -H unix://docker.sock start shipyard_$CNT > /dev/null
+    done
+    echo "Starting Shipyard"
+    docker -H unix://docker.sock stop shipyard > /dev/null
+    docker -H unix://docker.sock start shipyard > /dev/null
+        
 elif [ "$ACTION" = "cleanup" ] ; then
     cleanup
     echo "Shipyard Stack Removed"
