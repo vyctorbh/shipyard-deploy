@@ -76,7 +76,16 @@ elif [ "$ACTION" = "restart" ] ; then
     echo "Starting shipyard"
     docker -H unix://docker.sock stop shipyard > /dev/null
     docker -H unix://docker.sock start shipyard > /dev/null
-        
+elif [ "$ACTION" = "upgrade" ] ; then
+    echo "Pulling latest Shipyard"
+    docker -H unix://docker.sock pull shipyard/shipyard > /dev/null
+
+    echo "Killing and removing existing Shipyard container"
+    docker -H unix://docker.sock kill shipyard > /dev/null
+    docker -H unix://docker.sock rm shipyard > /dev/null
+
+    echo "Starting new Shipyard container"
+    docker -H unix://docker.sock run -i -t -d -p 8000:8000 --link shipyard_db:db --link shipyard_redis:redis --name shipyard -e DEBUG=$DEBUG --entrypoint /app/.docker/run.sh shipyard/shipyard:$TAG app master-worker > /dev/null
 elif [ "$ACTION" = "cleanup" ] ; then
     cleanup
     echo "Shipyard Stack Removed"
@@ -84,5 +93,3 @@ elif [ "$ACTION" = "purge" ] ; then
     echo "Removing Shipyard images.  This could take a moment..."
     purge
 fi
-
-
