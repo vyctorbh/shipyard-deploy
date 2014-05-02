@@ -19,6 +19,8 @@ There are a few environment variables to allow you to customize the stack:
 ## Setup Shipyard Stack
 `docker run -i -t -v /var/run/docker.sock:/docker.sock shipyard/deploy setup`
 
+After running setup you will need to install the agent.  The easiest way is to use the Docker image as mentioned in the Agent docs at https://github.com/shipyard/shipyard-agent#docker
+
 ## Remove Shipyard Stack
 `docker run -i -t -v /var/run/docker.sock:/docker.sock shipyard/deploy cleanup`
 
