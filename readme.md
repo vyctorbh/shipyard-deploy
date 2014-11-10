@@ -1,3 +1,5 @@
+# NOTE: the agent is no longer used in Shipyard v2. This repository is left here for legacy purposes.
+
 # Shipyard Deploy
 This will deploy a componentized Shipyard stack on your Docker host.  It will
 pull, launch, and link the various services together so you have an entire
