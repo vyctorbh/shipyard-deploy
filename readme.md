@@ -1,4 +1,6 @@
-# NOTE: the agent is no longer used in Shipyard v2. This repository is left here for legacy purposes.
+# NOTE: this is no longer used in Shipyard v2. This repository is left here for legacy purposes.
+
+See http://shipyard-project.com for v2 information.
 
 # Shipyard Deploy
 This will deploy a componentized Shipyard stack on your Docker host.  It will
