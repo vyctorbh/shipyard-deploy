@@ -12,6 +12,6 @@ build: deps
 	@go build -a -tags 'netgo' -ldflags '-w -linkmode external -extldflags -static' .
 
 image: build
-	@docker build -t shipyard/shipyard-deploy:$(TAG) .
+	@docker build -t shipyard/deploy:$(TAG) .
 
 .PHONY: build image deps
