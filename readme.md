@@ -10,16 +10,16 @@ to work with the Docker host.
 `docker run --rm shipyard/shipyard-deploy -h`: show help
 
 ## Setup Shipyard Stack
-`docker run --rm -v /var/run/docker.sock:/docker.sock shipyard/deploy start`
+`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock shipyard/deploy start`
 
 ## Stop Shipyard Stack
-`docker run --rm -v /var/run/docker.sock:/docker.sock shipyard/deploy stop`
+`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock shipyard/deploy stop`
 
 ## Restart Shipyard Stack
-`docker run --rm -v /var/run/docker.sock:/docker.sock shipyard/deploy restart`
+`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock shipyard/deploy restart`
 
 ## Upgrade Shipyard
-`docker run --rm -v /var/run/docker.sock:/docker.sock shipyard/deploy upgrade`
+`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock shipyard/deploy upgrade`
 
 ## Remove Shipyard
-`docker run --rm -v /var/run/docker.sock:/docker.sock shipyard/deploy remove`
+`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock shipyard/deploy remove`
