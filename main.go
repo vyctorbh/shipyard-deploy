@@ -24,6 +24,11 @@ func before(c *cli.Context) error {
 
 func startShipyard(tag, port string) error {
 	shipyardImage := fmt.Sprintf("shipyard/shipyard:%s", tag)
+	fmt.Printf("Pulling image: %s\n", shipyardImage)
+	if err := docker.PullImage(shipyardImage, nil); err != nil {
+		fmt.Printf("Error pulling image %s: %s\n", shipyardImage, err)
+		os.Exit(1)
+	}
 	shipyardPort := port
 	shipyardConfig := &dockerclient.ContainerConfig{
 		Image: shipyardImage,
@@ -55,8 +60,9 @@ func startShipyard(tag, port string) error {
 }
 
 func deployAction(c *cli.Context) {
+	rethinkdbImage := "shipyard/rethinkdb"
 	shipyardRethinkdbDataConfig := &dockerclient.ContainerConfig{
-		Image:      "shipyard/rethinkdb",
+		Image:      rethinkdbImage,
 		Entrypoint: []string{"/bin/bash"},
 		Cmd:        []string{"-l"},
 		Tty:        true,
@@ -69,7 +75,7 @@ func deployAction(c *cli.Context) {
 		},
 	}
 	shipyardRethinkdbConfig := &dockerclient.ContainerConfig{
-		Image: "shipyard/rethinkdb",
+		Image: rethinkdbImage,
 		HostConfig: dockerclient.HostConfig{
 			PublishAllPorts: true,
 			VolumesFrom:     []string{"shipyard-rethinkdb-data"},
@@ -78,6 +84,13 @@ func deployAction(c *cli.Context) {
 				MaximumRetryCount: 0,
 			},
 		},
+	}
+
+	// pull images
+	fmt.Printf("Pulling image: %s\n", rethinkdbImage)
+	if err := docker.PullImage(rethinkdbImage, nil); err != nil {
+		fmt.Printf("error pulling shipyard image: %s\n", err)
+		os.Exit(1)
 	}
 
 	// start the show
