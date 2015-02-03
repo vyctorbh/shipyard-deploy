@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/samalba/dockerclient"
 )
@@ -16,7 +15,8 @@ var (
 func before(c *cli.Context) error {
 	d, err := dockerclient.NewDockerClient(c.GlobalString("docker"), nil)
 	if err != nil {
-		log.Fatalf("unable to connect to docker at %s: %s", c.GlobalString("docker"), err)
+		fmt.Printf("unable to connect to docker at %s: %s\n", c.GlobalString("docker"), err)
+		os.Exit(1)
 	}
 	docker = d
 	return nil
@@ -81,101 +81,108 @@ func deployAction(c *cli.Context) {
 	}
 
 	// start the show
-	log.Info("Starting Rethinkdb Data")
+	fmt.Println("Starting Rethinkdb Data")
 	rethinkdbDataId, err := docker.CreateContainer(shipyardRethinkdbDataConfig, "shipyard-rethinkdb-data")
 	if err != nil {
-		log.Fatalf("error creating shipyard rethinkdb data container: %s", err)
+		fmt.Printf("error creating shipyard rethinkdb data container: %s\n", err)
+		os.Exit(1)
 	}
 	if err := docker.StartContainer(rethinkdbDataId, &shipyardRethinkdbDataConfig.HostConfig); err != nil {
-		log.Fatalf("error starting shipyard rethinkdb data container: %s", err)
+		fmt.Printf("error starting shipyard rethinkdb data container: %s\n", err)
+		os.Exit(1)
 	}
 
-	log.Info("Starting Rethinkdb")
+	fmt.Println("Starting Rethinkdb")
 	rethinkdbId, err := docker.CreateContainer(shipyardRethinkdbConfig, "shipyard-rethinkdb")
 	if err != nil {
-		log.Fatalf("error creating shipyard rethinkdb container: %s", err)
+		fmt.Printf("error creating shipyard rethinkdb container: %s\n", err)
+		os.Exit(1)
 	}
 	if err := docker.StartContainer(rethinkdbId, &shipyardRethinkdbConfig.HostConfig); err != nil {
-		log.Fatalf("error starting shipyard rethinkdb container: %s", err)
+		fmt.Printf("error starting shipyard rethinkdb container: %s\n", err)
+		os.Exit(1)
 	}
 
-	log.Info("Starting Shipyard")
+	fmt.Println("Starting Shipyard")
 	if err := startShipyard(c.GlobalString("tag"), c.GlobalString("port")); err != nil {
-		log.Fatalf("error starting shipyard: %s", err)
+		fmt.Printf("error starting shipyard: %s\n", err)
+		os.Exit(1)
 	}
 
-	log.Info("Shipyard Stack started successfully")
-
+	fmt.Println("Shipyard Stack started successfully")
+	fmt.Println(" Username: admin Password: shipyard")
 }
 
 func stopAction(c *cli.Context) {
-	log.Info("Stopping Shipyard")
+	fmt.Println("Stopping Shipyard")
 	if err := docker.StopContainer("shipyard", 5); err != nil {
-		log.Errorf("error stopping shipyard: %s", err)
+		fmt.Printf("error stopping shipyard: %s\n", err)
 	}
 
-	log.Info("Stopping Shipyard Rethinkdb")
+	fmt.Println("Stopping Shipyard Rethinkdb")
 	if err := docker.StopContainer("shipyard-rethinkdb", 5); err != nil {
-		log.Errorf("error stopping shipyard-rethinkdb: %s", err)
+		fmt.Printf("error stopping shipyard-rethinkdb: %s\n", err)
 	}
 
-	log.Info("Stopping Shipyard Rethinkdb Data")
+	fmt.Println("Stopping Shipyard Rethinkdb Data")
 	if err := docker.StopContainer("shipyard-rethinkdb-data", 5); err != nil {
-		log.Errorf("error stopping shipyard-rethinkdb-data: %s", err)
+		fmt.Printf("error stopping shipyard-rethinkdb-data: %s\n", err)
 	}
 }
 
 func restartAction(c *cli.Context) {
-	log.Info("Restarting Shipyard Rethinkdb Data")
+	fmt.Println("Restarting Shipyard Rethinkdb Data")
 	if err := docker.RestartContainer("shipyard-rethinkdb-data", 5); err != nil {
-		log.Errorf("error restarting shipyard-rethinkdb-data: %s", err)
+		fmt.Printf("error restarting shipyard-rethinkdb-data: %s\n", err)
 	}
 
-	log.Info("Restarting Shipyard Rethinkdb")
+	fmt.Println("Restarting Shipyard Rethinkdb")
 	if err := docker.RestartContainer("shipyard-rethinkdb", 5); err != nil {
-		log.Errorf("error restarting shipyard-rethinkdb: %s", err)
+		fmt.Printf("error restarting shipyard-rethinkdb: %s\n", err)
 	}
 
-	log.Info("Restarting Shipyard")
+	fmt.Println("Restarting Shipyard")
 	if err := docker.RestartContainer("shipyard", 5); err != nil {
-		log.Errorf("error restarting shipyard: %s", err)
+		fmt.Printf("error restarting shipyard: %s\n", err)
 	}
 }
 
 func upgradeAction(c *cli.Context) {
 	tag := c.GlobalString("tag")
-	log.Infof("Upgrading Shipyard to version: %s", tag)
+	fmt.Printf("Upgrading Shipyard to version: %s\n", tag)
 
 	shipyardImage := fmt.Sprintf("shipyard/shipyard:%s", tag)
 	if err := docker.PullImage(shipyardImage, nil); err != nil {
-		log.Fatalf("error pulling shipyard image: %s", err)
+		fmt.Printf("error pulling shipyard image: %s\n", err)
+		os.Exit(1)
 	}
 
 	if err := docker.RemoveContainer("shipyard", true); err != nil {
-		log.Warnf("error removing shipyard: %s", err)
+		fmt.Printf("error removing shipyard: %s\n", err)
 	}
 
 	if err := startShipyard(c.GlobalString("tag"), c.GlobalString("port")); err != nil {
-		log.Fatalf("error starting shipyard: %s", err)
+		fmt.Printf("error starting shipyard: %s\n", err)
+		os.Exit(1)
 	}
 
-	log.Info("Shipyard Upgraded Successfully")
+	fmt.Println("Shipyard Upgraded Successfully")
 }
 
 func removeAction(c *cli.Context) {
-	log.Info("Removing Shipyard Rethinkdb Data")
+	fmt.Println("Removing Shipyard Rethinkdb Data")
 	if err := docker.RemoveContainer("shipyard-rethinkdb-data", true); err != nil {
-		log.Errorf("error removing shipyard-rethinkdb-data: %s", err)
+		fmt.Printf("error removing shipyard-rethinkdb-data: %s\n", err)
 	}
 
-	log.Info("Removing Shipyard Rethinkdb")
+	fmt.Println("Removing Shipyard Rethinkdb")
 	if err := docker.RemoveContainer("shipyard-rethinkdb", true); err != nil {
-		log.Errorf("error removing shipyard-rethinkdb: %s", err)
+		fmt.Printf("error removing shipyard-rethinkdb: %s\n", err)
 	}
 
-	log.Info("Removing Shipyard")
+	fmt.Println("Removing Shipyard")
 	if err := docker.RemoveContainer("shipyard", true); err != nil {
-		log.Errorf("error removing shipyard: %s", err)
+		fmt.Printf("error removing shipyard: %s\n", err)
 	}
 }
 
