@@ -7,7 +7,7 @@ Shipyard stack.
 You must bind the Docker socket into the container in order for the deploy container
 to work with the Docker host.
 
-`docker run --rm shipyard/shipyard-deploy -h`: show help
+`docker run --rm shipyard/deploy -h`: show help
 
 ## Setup Shipyard Stack
 `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock shipyard/deploy start`
