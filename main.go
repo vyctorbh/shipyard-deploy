@@ -170,7 +170,7 @@ func upgradeAction(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	if err := docker.RemoveContainer("shipyard", true); err != nil {
+	if err := docker.RemoveContainer("shipyard", true, true); err != nil {
 		fmt.Printf("error removing shipyard: %s\n", err)
 	}
 
@@ -184,17 +184,17 @@ func upgradeAction(c *cli.Context) {
 
 func removeAction(c *cli.Context) {
 	fmt.Println("Removing Shipyard Rethinkdb Data")
-	if err := docker.RemoveContainer("shipyard-rethinkdb-data", true); err != nil {
+	if err := docker.RemoveContainer("shipyard-rethinkdb-data", true, true); err != nil {
 		fmt.Printf("error removing shipyard-rethinkdb-data: %s\n", err)
 	}
 
 	fmt.Println("Removing Shipyard Rethinkdb")
-	if err := docker.RemoveContainer("shipyard-rethinkdb", true); err != nil {
+	if err := docker.RemoveContainer("shipyard-rethinkdb", true, true); err != nil {
 		fmt.Printf("error removing shipyard-rethinkdb: %s\n", err)
 	}
 
 	fmt.Println("Removing Shipyard")
-	if err := docker.RemoveContainer("shipyard", true); err != nil {
+	if err := docker.RemoveContainer("shipyard", true, true); err != nil {
 		fmt.Printf("error removing shipyard: %s\n", err)
 	}
 }
