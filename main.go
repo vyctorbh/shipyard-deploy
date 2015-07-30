@@ -23,7 +23,7 @@ func before(c *cli.Context) error {
 }
 
 func startShipyard(tag, port string) error {
-	shipyardImage := fmt.Sprintf("shipyard/shipyard:%s", tag)
+	shipyardImage := fmt.Sprintf("vyctorbh/shipyard:%s", tag)
 	fmt.Printf("Pulling image: %s\n", shipyardImage)
 	if err := docker.PullImage(shipyardImage, nil); err != nil {
 		fmt.Printf("Error pulling image %s: %s\n", shipyardImage, err)
